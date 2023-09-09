@@ -1,13 +1,17 @@
-all: lisp
+NAME=mal
 
-lisp: *.go
-	go build .
+BIN=$(shell go env GOPATH)/bin/$(NAME)
 
-fmt:
-	go fmt .
+all: $(BIN)
 
-test:
-	go test .
+$(BIN): cmd/* pkg/* test
+	go install ./cmd/$(NAME)
+
+run:
+	go run ./cmd/$(NAME)
+
+tests:
+	go test ./test/...
 
 clean:
-	rm -f lisp
+	go clean -i ./cmd/$(NAME)
