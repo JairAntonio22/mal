@@ -14,7 +14,7 @@ func Read(input string) (expr Expr, err error) {
 	}()
 
 	tokens := tokenize(input)
-	reader := newReader(tokens)
+	reader := &reader{tokens: tokens}
 	expr = readForm(reader)
 	return
 }
@@ -25,11 +25,11 @@ const (
 	Strings       = `"(?:\\.|[^\\"])*"?`
 	Comments      = `;.*`
 	Atoms         = `[^\s\[\]{}('"` + "`" + `,;)]+`
-	MatchCriteria = ("(" + SpliceUnquote +
+	MatchCriteria = "(" + SpliceUnquote +
 		"|" + Symbols +
 		"|" + Strings +
 		"|" + Comments +
-		"|" + Atoms + ")")
+		"|" + Atoms + ")"
 )
 
 var re *regexp.Regexp = regexp.MustCompile(MatchCriteria)
@@ -82,10 +82,6 @@ func readList(reader *reader) Expr {
 type reader struct {
 	tokens []string
 	pos    int
-}
-
-func newReader(tokens []string) *reader {
-	return &reader{tokens: tokens}
 }
 
 func (r *reader) next() (string, error) {
