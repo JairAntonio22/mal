@@ -1,24 +1,48 @@
 package lisp
 
-import (
-	"fmt"
-)
+func Eval(input Expr, env Env) (expr Expr, err error) {
+	defer handle(&err)
 
-func Eval(input Expr) (expr Expr, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("Error ocurred while evaluating expr: %s", r)
-		}
-	}()
+	list, ok := input.(List)
 
-	switch v := input.(type) {
+	if !ok {
+		return evalAst(input, env), nil
+	}
+
+	if len(list) == 0 {
+		return input, nil
+	}
+
+	list = evalAst(list, env).(List)
+
+	f := list[0].(Func)
+	args := list[1:]
+
+	return f(args...), nil
+}
+
+func evalAst(input Expr, env Env) Expr {
+	switch input := input.(type) {
 	case Atom:
-		return v, nil
+		val, exists := env[input]
+		if !exists {
+			panic("undefined symbol" + input)
+		}
+
+		return val
 
 	case List:
-		return v, nil
+		list := List{}
+
+		for _, subexpr := range input {
+			result, _ := Eval(subexpr, env)
+
+			list = append(list, result)
+		}
+
+		return list
 
 	default:
-		panic("Unexpected type given to evaluate")
+		return input
 	}
 }

@@ -10,11 +10,9 @@ import (
 )
 
 func main() {
-	// TODO(Jair): implement cli functionalities
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		fmt.Print("=> ")
 		input, err := reader.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
@@ -26,13 +24,13 @@ func main() {
 
 		expr, err := lisp.Read(input)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(";=>", err)
 			continue
 		}
 
-		expr, err = lisp.Eval(expr)
+		expr, err = lisp.Eval(expr, lisp.ReplEnv)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(";=>", err)
 			continue
 		}
 

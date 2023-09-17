@@ -2,17 +2,12 @@ package lisp
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
+	"strconv"
 )
 
 func Read(input string) (expr Expr, err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("Error ocurred while reading: %s", r)
-		}
-	}()
-
+	defer handle(&err)
 	tokens := tokenize(input)
 	reader := &reader{tokens: tokens}
 	expr = readForm(reader)
@@ -41,7 +36,7 @@ func tokenize(input string) []string {
 func readForm(reader *reader) Expr {
 	token, err := reader.peek()
 	if err != nil {
-		panic("Missing closing parenthesis")
+		panic("missing closing parenthesis")
 	}
 
 	switch token {
@@ -50,10 +45,15 @@ func readForm(reader *reader) Expr {
 		return readList(reader)
 
 	case ")":
-		panic("Unexpected closing parenthesis")
+		panic("unexpected closing parenthesis")
 
 	default:
 		reader.next()
+
+		if num, err := strconv.Atoi(token); err == nil {
+			return Number(num)
+		}
+
 		return Atom(token)
 	}
 }
@@ -64,7 +64,7 @@ func readList(reader *reader) Expr {
 	for {
 		token, err := reader.peek()
 		if err != nil {
-			panic("Missing closing parenthesis")
+			panic("missing closing parenthesis")
 		}
 
 		if token == ")" {

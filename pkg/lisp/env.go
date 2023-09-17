@@ -1,76 +1,52 @@
 package lisp
 
-import "strconv"
-
-type Func func(Atom, Atom) Atom
-
-var repl_env map[Atom]Func = map[Atom]Func{
+var ReplEnv Env = Env{
 	"+": sum,
-	"-": sum,
-	"*": sum,
-	"/": sum,
+	"-": sub,
+	"*": mul,
+	"/": div,
 }
 
-func sum(a1, a2 Atom) Atom {
-	n1, err := strconv.ParseInt(a1.String(), 10, 64)
-	if err != nil {
-		panic(err)
+func sum(args ...Expr) Expr {
+	ans, _ := args[0].(Number)
+
+	for _, arg := range args[1:] {
+		n, _ := arg.(Number)
+		ans += n
 	}
 
-	n2, err := strconv.ParseInt(a2.String(), 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	ans := n1 + n2
-	literal := strconv.FormatInt(ans, 10)
-	return Atom(literal)
+	return Number(ans)
 }
 
-func sub(a1, a2 Atom) Atom {
-	n1, err := strconv.ParseInt(a1.String(), 10, 64)
-	if err != nil {
-		panic(err)
+func sub(args ...Expr) Expr {
+	ans, _ := args[0].(Number)
+
+	for _, arg := range args[1:] {
+		n, _ := arg.(Number)
+		ans -= n
 	}
 
-	n2, err := strconv.ParseInt(a2.String(), 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	ans := n1 - n2
-	literal := strconv.FormatInt(ans, 10)
-	return Atom(literal)
+	return Number(ans)
 }
 
-func prod(a1, a2 Atom) Atom {
-	n1, err := strconv.ParseInt(a1.String(), 10, 64)
-	if err != nil {
-		panic(err)
+func mul(args ...Expr) Expr {
+	ans, _ := args[0].(Number)
+
+	for _, arg := range args[1:] {
+		n, _ := arg.(Number)
+		ans *= n
 	}
 
-	n2, err := strconv.ParseInt(a2.String(), 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	ans := n1 * n2
-	literal := strconv.FormatInt(ans, 10)
-	return Atom(literal)
+	return Number(ans)
 }
 
-func div(a1, a2 Atom) Atom {
-	n1, err := strconv.ParseInt(a1.String(), 10, 64)
-	if err != nil {
-		panic(err)
+func div(args ...Expr) Expr {
+	ans, _ := args[0].(Number)
+
+	for _, arg := range args[1:] {
+		n, _ := arg.(Number)
+		ans /= n
 	}
 
-	n2, err := strconv.ParseInt(a2.String(), 10, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	ans := n1 / n2
-	literal := strconv.FormatInt(ans, 10)
-	return Atom(literal)
+	return Number(ans)
 }

@@ -13,5 +13,8 @@ run:
 tests:
 	go test ./test
 
+coverage:
+	go test -cover -coverpkg=./pkg/... ./test
+
 clean:
 	go clean -i ./cmd/$(NAME)

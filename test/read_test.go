@@ -7,11 +7,6 @@ import (
 	"github.com/JairAntonio22/mal/pkg/lisp"
 )
 
-type testCase struct {
-	given string
-	want  string
-}
-
 func testRead(t *testing.T, testCases []testCase) {
 	for _, tc := range testCases {
 		name := fmt.Sprintf("%s", tc.given)
